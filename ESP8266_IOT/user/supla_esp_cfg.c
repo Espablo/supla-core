@@ -31,7 +31,7 @@ supla_esp_cfg_save(SuplaEspCfg *cfg) {
 	spi_flash_erase_sector(CFG_SECTOR);
 
 	if ( SPI_FLASH_RESULT_OK == spi_flash_write(CFG_SECTOR * SPI_FLASH_SEC_SIZE, (uint32*)cfg, sizeof(SuplaEspCfg)) ) {
-		supla_log(LOG_DEBUG, "CFG WRITE SUCCESS");
+		//supla_log(LOG_DEBUG, "CFG WRITE SUCCESS");
 		return 1;
 	}
 
@@ -56,8 +56,16 @@ void ICACHE_FLASH_ATTR
 supla_esp_save_state(int delay) {
 
 	os_timer_disarm(&supla_esp_cfg_timer1);
-	os_timer_setfn(&supla_esp_cfg_timer1, _supla_esp_save_state, NULL);
-    os_timer_arm (&supla_esp_cfg_timer1, delay, 0);
+
+	if ( delay > 0 ) {
+
+		os_timer_setfn(&supla_esp_cfg_timer1, _supla_esp_save_state, NULL);
+	    os_timer_arm (&supla_esp_cfg_timer1, delay, 0);
+
+	} else {
+		_supla_esp_save_state(NULL);
+	}
+
 
 }
 
@@ -123,6 +131,10 @@ supla_esp_cfg_init(void) {
 		supla_esp_cfg.GUID[a]= (supla_esp_cfg.GUID[a] + system_get_time() + spi_flash_get_id() + system_get_chip_id() + system_get_rtc_time()) % 255;
 	}
 
+	#ifdef CFG_AFTER_GUID_GEN
+	CFG_AFTER_GUID_GEN;
+	#endif
+
 	memset(&supla_esp_state, 0, sizeof(SuplaEspState));
 
 	if ( supla_esp_cfg_save(&supla_esp_cfg) == 1 ) {
@@ -133,5 +145,17 @@ supla_esp_cfg_init(void) {
 
 	return 0;
 }
+/*
+char ICACHE_FLASH_ATTR supla_esp_write_log(char *log) {
 
+	supla_esp_state.len++;
 
+	if ( supla_esp_state.len < 1 || supla_esp_state.len > 20 )
+		supla_esp_state.len = 1;
+
+	ets_snprintf(supla_esp_state.log[supla_esp_state.len-1], 200, "%s", log);
+
+	supla_esp_save_state(200000);
+
+}
+*/
