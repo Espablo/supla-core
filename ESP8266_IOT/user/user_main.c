@@ -69,6 +69,7 @@ void user_init(void)
 	 struct rst_info *rtc_info = system_get_rst_info();
 	 supla_log(LOG_DEBUG, "RST reason: %i", rtc_info->reason);
 
+	 system_soft_wdt_restart();
 
      wifi_status_led_uninstall();
      supla_esp_cfg_init();
@@ -76,6 +77,9 @@ void user_init(void)
 
      supla_log(LOG_DEBUG, "Starting %i", system_get_time());
 
+     #ifdef BOARD_ESP_STARTING
+     BOARD_ESP_STARTING
+     #endif
 
 	 #if NOSSL == 1
       supla_log(LOG_DEBUG, "NO SSL!");

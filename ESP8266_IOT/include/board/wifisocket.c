@@ -88,7 +88,7 @@ void supla_esp_board_gpio_init(void) {
 	// ---------------------------------------
 
     supla_relay_cfg[0].gpio_id = B_RELAY1_PORT;
-    supla_relay_cfg[0].flags = RELAY_FLAG_RESTORE;
+    supla_relay_cfg[0].flags = RELAY_FLAG_RESTORE_FORCE;
     supla_relay_cfg[0].channel = 0;
     
 	#ifdef __BOARD_wifisocket_x4
@@ -137,7 +137,7 @@ void supla_esp_board_set_channels(TDS_SuplaRegisterDevice_B *srd) {
 		srd->channels[1].FuncList = 0;
 		srd->channels[1].Default = 0;
 
-		supla_get_temp_and_humidity(srd->channels[1].value);
+		supla_get_temperature(srd->channels[1].value);
 
 	#endif
 	#endif

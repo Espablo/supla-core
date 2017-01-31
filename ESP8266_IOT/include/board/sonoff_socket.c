@@ -28,7 +28,7 @@ void supla_esp_board_gpio_init(void) {
 	// ---------------------------------------
 
     supla_relay_cfg[0].gpio_id = B_RELAY1_PORT;
-    supla_relay_cfg[0].flags = RELAY_FLAG_RESTORE;
+    supla_relay_cfg[0].flags = RELAY_FLAG_RESTORE_FORCE;
     supla_relay_cfg[0].channel = 0;
     
 

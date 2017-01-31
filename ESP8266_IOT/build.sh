@@ -100,6 +100,8 @@ case $1 in
    "sonoff_touch")
       SPI_MODE="DOUT"
    ;;
+   "sonoff_dual")
+   ;;
    "sonoff_th16")
    ;;
    "sonoff_th10")
@@ -117,10 +119,10 @@ case $1 in
      NOSSL=1
    ;;
    "zam_row_01")
+      FLASH_SIZE="2048"
    ;;
    "zam_sbp_01")
       FLASH_SIZE="2048"
-      UPGRADE=1
    ;;
    "rgbw_wroom")
      DEP_LIBS="-lpwm -lssl"
@@ -157,6 +159,7 @@ case $1 in
    echo "              sonoff";
    echo "              sonoff_ds18b20";
    echo "              sonoff_touch";
+   echo "              sonoff_dual";
    echo "              sonoff_socket";
    echo "              sonoff_th10";
    echo "              sonoff_th16";
@@ -201,7 +204,7 @@ esac
 
 
 if [ -z "$SPI_MODE" ]; then
-  SPI_MODE = "QIO"
+  SPI_MODE = "DIO"
 fi
 
 if [ "$SDK154" -eq 1 ]; then

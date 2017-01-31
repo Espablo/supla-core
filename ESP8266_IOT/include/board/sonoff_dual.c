@@ -1,6 +1,6 @@
 /*
  ============================================================================
- Name        : sonoff_touch.c
+ Name        : sonoff_dual.c
  Author      : Przemyslaw Zygmunt przemek@supla.org
  Copyright   : GPLv2
  ============================================================================
@@ -11,7 +11,7 @@
 
 void supla_esp_board_set_device_name(char *buffer, uint8 buffer_size) {
 
-		ets_snprintf(buffer, buffer_size, "SONOFF-TOUCH");
+	ets_snprintf(buffer, buffer_size, "SONOFF-DUAL");
 
 }
 
@@ -36,7 +36,9 @@ void supla_esp_board_gpio_init(void) {
 
 void supla_esp_board_set_channels(TDS_SuplaRegisterDevice_B *srd) {
 	
-	srd->channel_count = 1;
+
+    srd->channel_count = 1;
+
 
 	srd->channels[0].Number = 0;
 	srd->channels[0].Type = SUPLA_CHANNELTYPE_RELAY;
@@ -44,7 +46,7 @@ void supla_esp_board_set_channels(TDS_SuplaRegisterDevice_B *srd) {
 	srd->channels[0].FuncList = SUPLA_BIT_RELAYFUNC_POWERSWITCH \
 								| SUPLA_BIT_RELAYFUNC_LIGHTSWITCH;
 
-	srd->channels[0].Default = SUPLA_CHANNELFNC_LIGHTSWITCH;
+	srd->channels[0].Default = SUPLA_CHANNELFNC_POWERSWITCH;
 
 	srd->channels[0].value[0] = supla_esp_gpio_relay_on(B_RELAY1_PORT);
 

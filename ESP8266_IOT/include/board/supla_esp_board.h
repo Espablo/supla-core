@@ -68,6 +68,10 @@
 
 #include "board/sonoff_touch.h"
 
+#elif defined(__BOARD_sonoff_dual)
+
+#include "board/sonoff_dual.h"
+
 #elif defined(__BOARD_sonoff_socket)
 
 #include "board/sonoff_socket.h"

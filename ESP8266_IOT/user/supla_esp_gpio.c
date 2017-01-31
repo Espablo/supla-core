@@ -173,6 +173,8 @@ char supla_esp_gpio_relay_hi(int port, char hi, char save_before) {
     char *state = NULL;
     char _hi;
 
+    system_soft_wdt_stop();
+
     if ( hi == 255 ) {
     	hi = supla_esp_gpio_relay_is_hi(port) == 1 ? 0 : 1;
     }
@@ -198,6 +200,7 @@ char supla_esp_gpio_relay_hi(int port, char hi, char save_before) {
 
     			supla_esp_gpio_relay_hi(supla_relay_cfg[supla_relay_cfg[a].bind].gpio_id, 0, save_before);
     			os_delay_us(50000);
+
 
     		}
 
@@ -226,9 +229,15 @@ char supla_esp_gpio_relay_hi(int port, char hi, char save_before) {
 
         //supla_log(LOG_DEBUG, "port = %i, hi = %i", port, hi);
 
+    	ETS_GPIO_INTR_DISABLE();
     	supla_esp_gpio_hi(port, _hi);
+    	ETS_GPIO_INTR_ENABLE();
+
     	os_delay_us(10000);
+
+    	ETS_GPIO_INTR_DISABLE();
     	supla_esp_gpio_hi(port, _hi);
+    	ETS_GPIO_INTR_ENABLE();
 
     	if ( time != NULL )
         	*time = t;
@@ -252,6 +261,8 @@ char supla_esp_gpio_relay_hi(int port, char hi, char save_before) {
 		supla_esp_save_state(SAVE_STATE_DELAY);
     }
 
+
+    system_soft_wdt_restart();
 
     return result;
 }
