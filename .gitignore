@@ -11,17 +11,11 @@ local.properties
 .settings/
 .loadpath
 
-# Eclipse Core
-.project
-
 # External tool builders
 .externalToolBuilders/
 
 # Locally stored "Eclipse launch configurations"
 *.launch
-
-# CDT-specific
-.cproject
 
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
@@ -50,3 +44,9 @@ local.properties
 
 # acs
 /ESP8266_IOT/include/board/acs_*
+
+# Valgring cfg
+valgrind-suppressions.cfg
+
+# Eclipse
+/RemoteSystemsTempFiles/
