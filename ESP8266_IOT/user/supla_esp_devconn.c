@@ -709,12 +709,15 @@ void
 supla_esp_devconn_connect_cb(void *arg) {
 	//supla_log(LOG_DEBUG, "devconn_connect_cb\r\n");
 	supla_esp_srpc_init();	
+	devconn_autoconnect = 1;
 }
 
 
 void
 supla_esp_devconn_disconnect_cb(void *arg){
 	//supla_log(LOG_DEBUG, "devconn_disconnect_cb\r\n");
+
+	devconn_autoconnect = 1;
 
 	 if ( supla_esp_cfgmode_started() == 0 ) {
 
@@ -755,7 +758,6 @@ supla_esp_devconn_dns_found_cb(const char *name, ip_addr_t *ip, void *arg) {
 	espconn_regist_disconcb(&ESPConn, supla_esp_devconn_disconnect_cb);
 
 	supla_espconn_connect(&ESPConn);
-	devconn_autoconnect = 1;
 
 }
 
@@ -806,6 +808,7 @@ void DEVCONN_ICACHE_FLASH
 supla_esp_devconn_init(void) {
 
 	last_response = 0;
+	devconn_autoconnect = 1;
 	ets_snprintf(devconn_laststate, STATE_MAXSIZE, "WiFi - Connecting...");
 	//sys_wait_for_restart = 0;
 
