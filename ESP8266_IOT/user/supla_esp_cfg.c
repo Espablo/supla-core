@@ -101,12 +101,8 @@ supla_esp_cfg_init(void) {
 	   }
 	}
 
+	memset(&supla_esp_cfg, 0, sizeof(SuplaEspCfg));
 	memcpy(supla_esp_cfg.TAG, TAG, 6);
-	supla_esp_cfg.Server[0] = 0;
-	supla_esp_cfg.LocationID = 0;
-	supla_esp_cfg.LocationPwd[0] = 0;
-	supla_esp_cfg.WIFI_PWD[0] = 0;
-	supla_esp_cfg.WIFI_SSID[0] = 0;
 	supla_esp_cfg.CfgButtonType = BTN_TYPE_BUTTON;
 	supla_esp_cfg.Button1Type = BTN_TYPE_BUTTON;
 	supla_esp_cfg.Button2Type = BTN_TYPE_SWITCH;
