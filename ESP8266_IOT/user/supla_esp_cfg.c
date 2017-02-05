@@ -83,13 +83,20 @@ supla_esp_cfg_init(void) {
 
 		   supla_log(LOG_DEBUG, "CFG READ SUCCESS!");
 
+		   /*
 		   supla_log(LOG_DEBUG, "SSID: %s", supla_esp_cfg.WIFI_SSID);
+		   //supla_log(LOG_DEBUG, "Wifi PWD: %s", supla_esp_cfg.WIFI_PWD);
 		   supla_log(LOG_DEBUG, "SVR: %s", supla_esp_cfg.Server);
 		   supla_log(LOG_DEBUG, "Location ID: %i", supla_esp_cfg.LocationID);
+		   //supla_log(LOG_DEBUG, "Location PWD: %s", supla_esp_cfg.LocationPwd);
 		   supla_log(LOG_DEBUG, "CFG BUTTON TYPE: %s", supla_esp_cfg.CfgButtonType == BTN_TYPE_BUTTON ? "button" : "switch");
 
 		   supla_log(LOG_DEBUG, "BUTTON1 TYPE: %s", supla_esp_cfg.Button1Type == BTN_TYPE_BUTTON ? "button" : "switch");
 		   supla_log(LOG_DEBUG, "BUTTON2 TYPE: %s", supla_esp_cfg.Button2Type == BTN_TYPE_BUTTON ? "button" : "switch");
+		   
+		   supla_log(LOG_DEBUG, "LedOff: %i", supla_esp_cfg.StatusLedOff);
+		   supla_log(LOG_DEBUG, "InputCfgTriggerOff: %i", supla_esp_cfg.InputCfgTriggerOff);
+		   */
 
 			if ( SPI_FLASH_RESULT_OK == spi_flash_read((CFG_SECTOR+1) * SPI_FLASH_SEC_SIZE, (uint32*)&supla_esp_state, sizeof(SuplaEspState)) ) {
 			    supla_log(LOG_DEBUG, "STATE READ SUCCESS!");

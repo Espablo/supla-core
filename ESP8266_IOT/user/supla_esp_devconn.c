@@ -40,7 +40,7 @@ static char esp_send_buffer_len = 0;
     #define supla_espconn_connect espconn_connect
 #else
     #define supla_espconn_sent espconn_secure_sent
-	#define supla_espconn_disconnect espconn_secure_disconnect
+	#define _supla_espconn_disconnect espconn_secure_disconnect
 	#define supla_espconn_connect espconn_secure_connect
 #endif
 
@@ -705,6 +705,17 @@ supla_esp_srpc_init(void) {
 
 }
 
+void supla_espconn_disconnect(struct espconn *espconn) {
+	
+	//supla_log(LOG_DEBUG, "Disconnect %i", espconn->state);
+	
+	if ( espconn->state != ESPCONN_CLOSE
+		 && espconn->state != ESPCONN_NONE ) {
+		_supla_espconn_disconnect(espconn);
+	}
+	
+}
+
 void
 supla_esp_devconn_connect_cb(void *arg) {
 	//supla_log(LOG_DEBUG, "devconn_connect_cb\r\n");
@@ -807,6 +818,9 @@ supla_esp_devconn_before_cfgmode_start(void) {
 void DEVCONN_ICACHE_FLASH
 supla_esp_devconn_init(void) {
 
+	memset(&ESPConn, 0, sizeof(struct espconn));
+	memset(&ESPTCP, 0, sizeof(esp_tcp));
+	
 	last_response = 0;
 	devconn_autoconnect = 1;
 	ets_snprintf(devconn_laststate, STATE_MAXSIZE, "WiFi - Connecting...");
