@@ -87,6 +87,10 @@
 
 #include "board/acs_zam_sbp_01.c"
 
+#elif defined(__BOARD_ngm)
+
+#include "board/acs_ngm.c"
+
 #elif defined(__BOARD_lightswitch_x2) \
         || defined(__BOARD_lightswitch_x2_DHT11) \
         || defined(__BOARD_lightswitch_x2_DHT22) \
