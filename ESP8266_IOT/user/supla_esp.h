@@ -15,7 +15,7 @@
 #include "supla-dev/proto.h"
 #include "board/supla_esp_board.h"
 
-#define SUPLA_ESP_SOFTVER "1.8.4"
+#define SUPLA_ESP_SOFTVER "1.8.5"
 
 #define LO_VALUE  0
 #define HI_VALUE  1
