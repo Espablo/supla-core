@@ -124,6 +124,9 @@ case $1 in
    "zam_sbp_01")
       FLASH_SIZE="2048"
    ;;
+   "ngm")
+      FLASH_SIZE="2048"
+   ;;
    "rgbw_wroom")
      DEP_LIBS="-lpwm -lssl"
    ;;
