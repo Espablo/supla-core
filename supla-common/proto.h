@@ -1,9 +1,17 @@
 /*
- ============================================================================
- Name        : proto.h
- Author      : Przemyslaw Zygmunt przemek@supla.org
- Copyright   : 2015-2016 GPLv2
- ============================================================================
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 #ifndef supla_proto_H_
@@ -67,6 +75,9 @@ extern "C" {
 #define SUPLA_LOCATIONPACK_MAXSIZE          20
 #define SUPLA_CHANNEL_CAPTION_MAXSIZE       401
 #define SUPLA_CHANNELPACK_MAXSIZE           20
+#define SUPLA_URL_HOST_MAXSIZE              101
+#define SUPLA_URL_PATH_MAXSIZE              101
+#define SUPLA_FIRMWARE_SIGNATURE_SIZE       256
 
 #define SUPLA_DCS_CALL_GETVERSION                         10
 #define SUPLA_SDC_CALL_GETVERSION_RESULT                  20
@@ -92,6 +103,8 @@ extern "C" {
 #define SUPLA_CS_CALL_CHANNEL_SET_VALUE_B                 205 // ver. >= 3
 #define SUPLA_DCS_CALL_SET_ACTIVITY_TIMEOUT               210 // ver. >= 2
 #define SUPLA_SDC_CALL_SET_ACTIVITY_TIMEOUT_RESULT        220 // ver. >= 2
+#define SUPLA_DS_CALL_GET_FIRMWARE_UPDATE_URL             300 // ver. >= 5
+#define SUPLA_SD_CALL_GET_FIRMWARE_UPDATE_URL_RESULT      310 // ver. >= 5
 
 #define SUPLA_RESULT_DATA_TOO_LARGE         -4
 #define SUPLA_RESULT_BUFFER_OVERFLOW        -3
@@ -198,6 +211,9 @@ extern "C" {
 #define SUPLA_EVENT_CONTROLLINGTHEROLLERSHUTTER             50
 #define SUPLA_EVENT_POWERONOFF                              60
 #define SUPLA_EVENT_LIGHTONOFF                              70
+
+#define SUPLA_URL_PROTO_HTTP   0x01;
+#define SUPLA_URL_PROTO_HTTPS  0x02;
 
 #pragma pack(push, 1)
 
@@ -469,6 +485,22 @@ typedef struct {
 	char SenderName[SUPLA_SENDER_NAME_MAXSIZE]; // Last variable in struct! | UTF8
 
 }TSC_SuplaEvent;
+
+typedef struct {
+
+	char available_protocols;
+	char host[SUPLA_URL_HOST_MAXSIZE];
+	char path[SUPLA_URL_PATH_MAXSIZE];
+
+}TSD_FirmwareUpdate_Url;
+
+typedef struct {
+
+	char exists;
+	TSD_FirmwareUpdate_Url url;
+	char signature[SUPLA_FIRMWARE_SIGNATURE_SIZE];
+
+}TSD_FirmwareUpdate_UrlResult;
 
 #pragma pack(pop)
 

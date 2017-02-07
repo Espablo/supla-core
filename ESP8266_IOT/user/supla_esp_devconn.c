@@ -58,6 +58,7 @@ static unsigned int recvbuff_size = 0;
 static char devconn_laststate[STATE_MAXSIZE];
 
 static char devconn_autoconnect = 1;
+static char firmware_update = 0;
 
 static unsigned int last_response = 0;
 static int server_activity_timeout;
@@ -622,6 +623,11 @@ supla_esp_on_remote_call_received(void *_srpc, unsigned int rr_id, unsigned int 
 		case SUPLA_SDC_CALL_SET_ACTIVITY_TIMEOUT_RESULT:
 			supla_esp_channel_set_activity_timeout_result(rd.data.sdc_set_activity_timeout_result);
 			break;
+		case SUPLA_SD_CALL_GET_FIRMWARE_UPDATE_URL_RESULT:
+		    if ( firmware_update == 1 ) {
+		    	supla_log(LOG_DEBUG, "Firmware - exists = %i, host = %s, path = %s", rd.data.sc_firmware_update_url_result->exists, rd.data.sc_firmware_update_url_result->url.host, rd.data.sc_firmware_update_url_result->url.path);
+		    }
+		    break;
 		}
 
 		srpc_rd_free(&rd);
@@ -823,6 +829,7 @@ supla_esp_devconn_init(void) {
 	
 	last_response = 0;
 	devconn_autoconnect = 1;
+	firmware_update = 2;
 	ets_snprintf(devconn_laststate, STATE_MAXSIZE, "WiFi - Connecting...");
 	//sys_wait_for_restart = 0;
 
@@ -946,6 +953,13 @@ supla_esp_devconn_timer1_cb(void *timer_arg) {
 
 		    	//supla_log(LOG_DEBUG, "PING");
 				srpc_dcs_async_ping_server(srpc);
+				
+				if ( firmware_update == 2 ) {
+					
+					firmware_update = 1;
+					srpc_sd_async_get_firmware_update_url(srpc);
+				}
+				
 
 			}
 

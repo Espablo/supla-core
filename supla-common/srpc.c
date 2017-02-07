@@ -1,9 +1,17 @@
 /*
- ============================================================================
- Name        : srpc.c [SUPLA DATA EXCHANGE]
- Author      : Przemyslaw Zygmunt p.zygmunt@acsoftware.pl [AC SOFTWARE]
- Copyright   : 2015-2016 GPLv2
- ============================================================================
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
 #include "srpc.h"
@@ -584,6 +592,20 @@ char SRPC_ICACHE_FLASH srpc_getdata(void *_srpc, TsrpcReceivedData *rd, unsigned
 
 			   break;
 
+		   case SUPLA_SD_CALL_GET_FIRMWARE_UPDATE_URL_RESULT:
+
+			   if ( srpc->sdp.data_size == sizeof(TSD_FirmwareUpdate_UrlResult)
+				    || srpc->sdp.data_size == sizeof(char) ) {
+
+				   rd->data.sc_firmware_update_url_result = (TSD_FirmwareUpdate_UrlResult*)malloc(sizeof(TSD_FirmwareUpdate_UrlResult));
+
+				   if ( srpc->sdp.data_size == sizeof(char) )
+					   memset(rd->data.sc_firmware_update_url_result, 0, sizeof(TSD_FirmwareUpdate_UrlResult));
+			   }
+
+
+			   break;
+
 		}
 
 		if ( rd->data.dcs_ping != NULL || call_with_no_data == 1 ) {
@@ -734,6 +756,11 @@ _supla_int_t SRPC_ICACHE_FLASH srpc_dcs_async_set_activity_timeout_result(void *
 	return srpc_async_call(_srpc, SUPLA_SDC_CALL_SET_ACTIVITY_TIMEOUT_RESULT, (char*)sdc_set_activity_timeout_result, sizeof(TSDC_SuplaSetActivityTimeoutResult));
 }
 
+_supla_int_t SRPC_ICACHE_FLASH srpc_sd_async_get_firmware_update_url(void *_srpc) {
+
+	return srpc_async_call(_srpc, SUPLA_DS_CALL_GET_FIRMWARE_UPDATE_URL, NULL, 0);
+}
+
 _supla_int_t SRPC_ICACHE_FLASH srpc_ds_async_registerdevice(void *_srpc, TDS_SuplaRegisterDevice *registerdevice) {
 
 	_supla_int_t size = sizeof(TDS_SuplaRegisterDevice)
@@ -795,6 +822,12 @@ _supla_int_t SRPC_ICACHE_FLASH srpc_ds_async_set_channel_result(void *_srpc, uns
 	result.Success = Success;
 
 	return srpc_async_call(_srpc, SUPLA_DS_CALL_CHANNEL_SET_VALUE_RESULT, (char*)&result, sizeof(TDS_SuplaChannelNewValueResult));
+}
+
+_supla_int_t SRPC_ICACHE_FLASH srpc_sd_async_get_firmware_update_url_result(void *_srpc, TSD_FirmwareUpdate_UrlResult *result) {
+
+	return srpc_async_call(_srpc, SUPLA_SD_CALL_GET_FIRMWARE_UPDATE_URL_RESULT, (char*)result, result->exists == 1 ? sizeof(TSD_FirmwareUpdate_UrlResult) : sizeof(char));
+
 }
 
 _supla_int_t SRPC_ICACHE_FLASH srpc_sc_async_location_update(void *_srpc, TSC_SuplaLocation *location) {
