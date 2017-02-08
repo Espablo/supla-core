@@ -85,6 +85,10 @@ void user_init(void)
       supla_log(LOG_DEBUG, "NO SSL!");
 	 #endif
 
+	 #ifdef __FOTA
+	  supla_esp_update_init();
+	 #endif
+
      supla_esp_devconn_init();
 
 

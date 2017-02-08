@@ -592,6 +592,15 @@ char SRPC_ICACHE_FLASH srpc_getdata(void *_srpc, TsrpcReceivedData *rd, unsigned
 
 			   break;
 
+		   case SUPLA_DS_CALL_GET_FIRMWARE_UPDATE_URL:
+
+			   if ( srpc->sdp.data_size == sizeof(TDS_FirmwareUpdateParams) )
+				   rd->data.ds_firmware_update_params = (TDS_FirmwareUpdateParams*)malloc(sizeof(TDS_FirmwareUpdateParams));
+
+			   break;
+
+
+
 		   case SUPLA_SD_CALL_GET_FIRMWARE_UPDATE_URL_RESULT:
 
 			   if ( srpc->sdp.data_size == sizeof(TSD_FirmwareUpdate_UrlResult)
@@ -756,9 +765,9 @@ _supla_int_t SRPC_ICACHE_FLASH srpc_dcs_async_set_activity_timeout_result(void *
 	return srpc_async_call(_srpc, SUPLA_SDC_CALL_SET_ACTIVITY_TIMEOUT_RESULT, (char*)sdc_set_activity_timeout_result, sizeof(TSDC_SuplaSetActivityTimeoutResult));
 }
 
-_supla_int_t SRPC_ICACHE_FLASH srpc_sd_async_get_firmware_update_url(void *_srpc) {
+_supla_int_t SRPC_ICACHE_FLASH srpc_sd_async_get_firmware_update_url(void *_srpc, TDS_FirmwareUpdateParams *result) {
 
-	return srpc_async_call(_srpc, SUPLA_DS_CALL_GET_FIRMWARE_UPDATE_URL, NULL, 0);
+	return srpc_async_call(_srpc, SUPLA_DS_CALL_GET_FIRMWARE_UPDATE_URL, (char*)result, sizeof(TDS_FirmwareUpdateParams));
 }
 
 _supla_int_t SRPC_ICACHE_FLASH srpc_ds_async_registerdevice(void *_srpc, TDS_SuplaRegisterDevice *registerdevice) {

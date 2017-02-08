@@ -66,6 +66,10 @@ void GPIO_ICACHE_FLASH supla_esp_gpio_state_ipreceived(void);
 void GPIO_ICACHE_FLASH supla_esp_gpio_state_connected(void);
 void GPIO_ICACHE_FLASH supla_esp_gpio_state_cfgmode(void);
 
+#ifdef __FOTA
+void GPIO_ICACHE_FLASH supla_esp_gpio_state_update(void);
+#endif
+
 void supla_esp_gpio_hi(int port, char hi);
 char supla_esp_gpio_is_hi(int port);
 char supla_esp_gpio_relay_is_hi(int port);

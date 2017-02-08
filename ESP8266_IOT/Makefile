@@ -18,6 +18,10 @@ FLAVOR = debug
 
 EXTRA_CCFLAGS += -DESP8266 -D__SINGLE_THREAD -D__EH_DISABLED -D__BOARD_$(BOARD) -DCFG_SECTOR=$(CFG_SECTOR) -DNOSSL=$(NOSSL)
 
+ifeq ($(FOTA), 1)
+EXTRA_CCFLAGS += -D__FOTA=1
+endif 
+
 ifndef PDIR # {
 GEN_IMAGES= eagle.app.v6.out
 GEN_BINS= eagle.app.v6.bin

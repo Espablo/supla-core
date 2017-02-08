@@ -20,6 +20,7 @@
 DEP_LIBS="-lssl"
 SDK154=1
 NOSSL=0
+SPI_MODE="DIO"
 
 export PATH=/hdd2/Espressif/xtensa-lx106-elf/bin:$PATH
 export COMPILE=gcc
@@ -120,12 +121,15 @@ case $1 in
    ;;
    "zam_row_01")
       FLASH_SIZE="2048"
+      FOTA=1
    ;;
    "zam_sbp_01")
       FLASH_SIZE="2048"
+      FOTA=1
    ;;
    "ngm")
       FLASH_SIZE="2048"
+      FOTA=1
    ;;
    "rgbw_wroom")
      DEP_LIBS="-lpwm -lssl"
@@ -184,31 +188,25 @@ case $1 in
    
 esac 
 
+CFG_SECTOR=0x3C
+
 case $FLASH_SIZE in
    "512")
-     CFG_SECTOR=0x3C
      SDK154=0
      SPI_SIZE_MAP=0
    ;;
    "2048")
-     CFG_SECTOR=0xC0
      SPI_SIZE_MAP=3
    ;;
    "4096")
-     CFG_SECTOR=0xC0
      SPI_SIZE_MAP=4
    ;;
    *)
      FLASH_SIZE="1024"
-     CFG_SECTOR=0xBC
      SPI_SIZE_MAP=2
    ;;
 esac
 
-
-if [ -z "$SPI_MODE" ]; then
-  SPI_MODE = "DIO"
-fi
 
 if [ "$SDK154" -eq 1 ]; then
   export SDK_PATH=/hdd2/Espressif/ESP8266_NONOS_SDK154
@@ -228,10 +226,31 @@ else
   EXTRA="NOSSL=0"
 fi
 
+if [ "$FOTA" -eq 1 ]; then
 
-if [ "$UPGRADE" -eq 1 ];then
- make SUPLA_DEP_LIBS="$DEP_LIBS"  BOARD=$1 CFG_SECTOR="$CFG_SECTOR" BOOT=new APP=2 SPI_SPEED=40 SPI_MODE="$SPI_MODE" SPI_SIZE_MAP="$SPI_SIZE_MAP" $EXTRA && \
-   cp $BIN_PATH/upgrade/user1."$FLASH_SIZE".new."$SPI_SIZE_MAP".bin /media/sf_Public/"$BOARD_NAME"_user1."$FLASH_SIZE".new.bin && \
+  APP=1
+
+  if [ "user2" = "$2" ]; then
+   APP=2
+  fi
+
+  case $FLASH_SIZE in
+      "1024")
+       CFG_SECTOR=0x7C
+       ;;
+      "2048")
+        SPI_SIZE_MAP=5
+        CFG_SECTOR=0xFC
+      ;;
+      "4096")
+        SPI_SIZE_MAP=6
+        CFG_SECTOR=0xFC
+      ;;
+  esac
+
+
+   make SUPLA_DEP_LIBS="$DEP_LIBS" FOTA="$FOTA" BOARD=$1 CFG_SECTOR="$CFG_SECTOR" BOOT=new APP="$APP" SPI_SPEED=40 SPI_MODE="$SPI_MODE" SPI_SIZE_MAP="$SPI_SIZE_MAP" $EXTRA && \
+   cp $BIN_PATH/upgrade/user"$APP"."$FLASH_SIZE".new."$SPI_SIZE_MAP".bin /media/sf_Public/"$BOARD_NAME"_user"$APP"."$FLASH_SIZE".new."$SPI_SIZE_MAP".bin && \
    cp $SDK_PATH/bin/boot_v1.2.bin /media/sf_Public/boot_v1.2.bin
 
 else

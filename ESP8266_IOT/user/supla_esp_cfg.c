@@ -72,7 +72,7 @@ supla_esp_save_state(int delay) {
 char ICACHE_FLASH_ATTR
 supla_esp_cfg_init(void) {
 
-	char TAG[6] = {'S','U','P','L','A', 3};
+	char TAG[6] = {'S','U','P','L','A', 4};
 	char mac[6];
 	int a;
 

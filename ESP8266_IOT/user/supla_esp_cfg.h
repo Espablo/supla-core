@@ -36,6 +36,8 @@ typedef struct {
     char StatusLedOff;
     char InputCfgTriggerOff;
 
+    char FirmwareUpdate;
+
 
 }SuplaEspCfg;
 

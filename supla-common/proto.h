@@ -212,8 +212,11 @@ extern "C" {
 #define SUPLA_EVENT_POWERONOFF                              60
 #define SUPLA_EVENT_LIGHTONOFF                              70
 
-#define SUPLA_URL_PROTO_HTTP   0x01;
-#define SUPLA_URL_PROTO_HTTPS  0x02;
+#define SUPLA_URL_PROTO_HTTP   0x01
+#define SUPLA_URL_PROTO_HTTPS  0x02
+
+#define SUPLA_PLATFORM_UNKNOWN  0
+#define SUPLA_PLATFORM_ESP8266  1
 
 #pragma pack(push, 1)
 
@@ -488,8 +491,20 @@ typedef struct {
 
 typedef struct {
 
+	char Platform;
+
+	int Param1;
+	int Param2;
+	int Param3;
+	int Param4;
+
+}TDS_FirmwareUpdateParams;
+
+typedef struct {
+
 	char available_protocols;
 	char host[SUPLA_URL_HOST_MAXSIZE];
+	int port;
 	char path[SUPLA_URL_PATH_MAXSIZE];
 
 }TSD_FirmwareUpdate_Url;

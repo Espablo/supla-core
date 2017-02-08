@@ -30,7 +30,7 @@
 #define STATE_IPRECEIVED    2
 #define STATE_CONNECTED     4
 #define STATE_CFGMODE       5
-
+#define STATE_UPDATE        6
 
 #define INPUT_MIN_CYCLE_COUNT   5
 #define INPUT_CYCLE_TIME        20
@@ -879,6 +879,20 @@ supla_esp_gpio_state_cfgmode(void) {
 	#endif
 
 }
+
+#ifdef __FOTA
+void GPIO_ICACHE_FLASH supla_esp_gpio_state_update(void) {
+
+	if ( supla_last_state == STATE_UPDATE )
+		return;
+
+	supla_last_state = STATE_UPDATE;
+
+    #if defined(LED_RED_PORT)
+		supla_esp_gpio_led_blinking(LED_RED, 20);
+	#endif
+}
+#endif
 
 char  supla_esp_gpio_is_hi(int port) {
 

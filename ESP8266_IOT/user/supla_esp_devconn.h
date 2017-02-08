@@ -25,6 +25,7 @@ void DEVCONN_ICACHE_FLASH supla_esp_devconn_on_temp_humidity_changed(char humidi
 #endif
 
 void DEVCONN_ICACHE_FLASH supla_esp_devconn_before_cfgmode_start(void);
+void DEVCONN_ICACHE_FLASH supla_esp_devconn_before_update_start(void);
 
 
 #endif /* SUPLA_ESP_CLIENT_H_ */
