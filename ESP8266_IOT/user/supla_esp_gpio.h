@@ -73,6 +73,10 @@ void GPIO_ICACHE_FLASH supla_esp_gpio_state_update(void);
 void supla_esp_gpio_hi(int port, char hi);
 char supla_esp_gpio_is_hi(int port);
 char supla_esp_gpio_relay_is_hi(int port);
+char supla_esp_gpio_relay_hi(int port, char hi, char save_before);
+char supla_esp_gpio_relay_on(int port);
+
+void supla_esp_gpio_set_led(char r, char g, char b);
 
 #endif /* SUPLA_ESP_GPIO_H_ */
 

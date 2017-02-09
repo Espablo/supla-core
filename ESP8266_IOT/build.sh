@@ -235,6 +235,10 @@ if [ "$FOTA" -eq 1 ]; then
   fi
 
   case $FLASH_SIZE in
+      "512")
+       "512 flash size is not supported for FOTA"
+       exit 0
+       ;;
       "1024")
        CFG_SECTOR=0x7C
        ;;

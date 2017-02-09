@@ -33,9 +33,8 @@
 	#define srpc_BUFFER_SIZE      1024
 	#define srpc_QUEUE_MAX_SIZE   2
 
-	#define malloc os_malloc
-	#define realloc os_realloc
-	#define free os_free
+	#include <user_interface.h>
+	#include "espmissingincludes.h"
 
 #elif defined(__AVR__)
 
@@ -132,7 +131,7 @@ char SRPC_ICACHE_FLASH srpc_queue_push(TSuplaDataPacket ***queue, unsigned char 
 
 	if ( sdp_new == 0 )
 		return SUPLA_RESULT_FALSE;
-	
+
 	(*size)++;
 
     *queue = (TSuplaDataPacket **)realloc(*queue, sizeof(TSuplaDataPacket *)*(*size));
@@ -147,7 +146,6 @@ char SRPC_ICACHE_FLASH srpc_queue_push(TSuplaDataPacket ***queue, unsigned char 
 	memcpy(sdp_new, sdp, sizeof(TSuplaDataPacket));
 
 	(*queue)[(*size)-1] = sdp_new;
-
 
 	return SUPLA_RESULT_TRUE;
 }
@@ -237,7 +235,6 @@ char SRPC_ICACHE_FLASH srpc_iterate(void *_srpc) {
     			lck_lock(srpc->lck);
     		}
 
-
     	} else {
         	supla_log(LOG_DEBUG, "ssrpc_in_queue_push error");
         	return lck_unlock_r(srpc->lck, SUPLA_RESULT_FALSE);
@@ -291,6 +288,7 @@ char SRPC_ICACHE_FLASH srpc_iterate(void *_srpc) {
         #endif
 
     }
+
 
     return lck_unlock_r(srpc->lck, SUPLA_RESULT_TRUE);
 }

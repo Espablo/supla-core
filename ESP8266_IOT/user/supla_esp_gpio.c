@@ -6,15 +6,19 @@
  ============================================================================
 */
 
+#include <stdlib.h>
+
 #include <ets_sys.h>
 #include <osapi.h>
 #include <mem.h>
 #include <os_type.h>
 #include <gpio.h>
 #include <user_interface.h>
+
 #include "supla_esp.h"
 #include "supla_esp_gpio.h"
 #include "supla_esp_cfg.h"
+#include "supla_esp_devconn.h"
 #include "supla_esp_cfgmode.h"
 
 #include "supla-dev/log.h"
@@ -500,7 +504,7 @@ LOCAL void
 supla_esp_gpio_intr_handler(void *params) {
 
 
-	char a;
+	int a;
 	uint32 gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
 	supla_input_cfg_t *input_cfg;
 
@@ -543,7 +547,7 @@ supla_esp_gpio_intr_handler(void *params) {
 void GPIO_ICACHE_FLASH
 supla_esp_gpio_init(void) {
 
-	char a;
+	int a;
 	//supla_log(LOG_DEBUG, "supla_esp_gpio_init");
 
 	supla_esp_gpio_init_time = 0;
@@ -913,7 +917,7 @@ char supla_esp_gpio_relay_is_hi(int port) {
     	if ( supla_relay_cfg[a].gpio_id == port ) {
 
     		if ( supla_relay_cfg[a].flags &  RELAY_FLAG_HI_LEVEL_TRIGGER ) {
-    			result == HI_VALUE ? LO_VALUE : HI_VALUE;
+    			result = result == HI_VALUE ? LO_VALUE : HI_VALUE;
     		}
 
     		break;

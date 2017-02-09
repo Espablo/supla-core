@@ -74,13 +74,13 @@ supla_esp_http_send_response(struct espconn *pespconn, const char *code, const c
 	char response[] = "HTTP/1.1 %s\r\nAccept-Ranges: bytes\r\nContent-Length: %i\r\nConnection: close\r\nContent-Type: text/html\r\n\r\n%s";
 	
 	int buff_len = strlen(code)+strlen(response)+html_len+10;
-	char *buff = os_malloc(buff_len);
+	char *buff = malloc(buff_len);
 	
 	ets_snprintf(buff, buff_len, response, code, html_len, html);
 
 	buff[buff_len-1] = 0;
-	espconn_sent(pespconn, buff, strlen(buff));
-	os_free(buff);
+	espconn_sent(pespconn, (unsigned char*)buff, strlen(buff));
+	free(buff);
 }
 
 void ICACHE_FLASH_ATTR 
@@ -154,7 +154,7 @@ supla_esp_parse_request(TrivialHttpParserVars *pVars, char *pdata, unsigned shor
 	int a, p;
 	
 	//for(a=0;a<len;a++)
-	//	os_printf("%c", pdata[a]);
+	//	printf("%c", pdata[a]);
 
 	if ( pVars->step == STEP_TYPE ) {
 		
@@ -421,13 +421,13 @@ supla_esp_recv_callback (void *arg, char *pdata, unsigned short len)
 	}
 
 	
-	if ( false == wifi_get_macaddr(STATION_IF, mac) ) {
+	if ( false == wifi_get_macaddr(STATION_IF, (unsigned char*)mac) ) {
 		supla_esp_http_error(conn);
 		return;
 	}
 
 	char dev_name[25];
-	supla_esp_board_set_device_name(&dev_name, 25);
+	supla_esp_board_set_device_name(dev_name, 25);
 	dev_name[24] = 0;
 	
 	char *buffer = 0;
@@ -440,7 +440,7 @@ supla_esp_recv_callback (void *arg, char *pdata, unsigned short len)
 			#ifdef CFGBTN_TYPE_SELECTION
 
 			int bufflen = 830+strlen(dev_name)+strlen(supla_esp_cfg.WIFI_SSID)+strlen(supla_esp_cfg.Server);
-			buffer = (char*)os_malloc(bufflen);
+			buffer = (char*)malloc(bufflen);
 		
 			ets_snprintf(buffer,
 					bufflen,
@@ -565,7 +565,7 @@ supla_esp_recv_callback (void *arg, char *pdata, unsigned short len)
 							  +strlen(html_template)
 							  +200;
 				
-				buffer = (char*)os_malloc(bufflen);	
+				buffer = (char*)malloc(bufflen);
 				
 				ets_snprintf(buffer,
 						bufflen,
@@ -620,7 +620,7 @@ supla_esp_recv_callback (void *arg, char *pdata, unsigned short len)
 							  +strlen(html_template)
 							  +200;
 				
-				buffer = (char*)os_malloc(bufflen);	
+				buffer = (char*)malloc(bufflen);
 				
 				ets_snprintf(buffer,
 						bufflen,
@@ -675,7 +675,7 @@ supla_esp_recv_callback (void *arg, char *pdata, unsigned short len)
 							  +strlen(html_template)
 							  +200;
 				
-				buffer = (char*)os_malloc(bufflen);	
+				buffer = (char*)malloc(bufflen);
 				
 				ets_snprintf(buffer,
 						bufflen,
@@ -719,7 +719,7 @@ supla_esp_recv_callback (void *arg, char *pdata, unsigned short len)
 	
 	if ( buffer ) {
 		supla_esp_http_ok((struct espconn *)arg, buffer);
-		os_free(buffer);
+		free(buffer);
 	}
 	
 	
@@ -732,7 +732,7 @@ supla_esp_discon_callback(void *arg) {
     struct espconn *conn = (struct espconn *)arg;
 	
     if ( conn->reverse != NULL ) {
-    	os_free(conn->reverse);
+    	free(conn->reverse);
     	conn->reverse = NULL;
     }
 }
@@ -742,7 +742,7 @@ supla_esp_connectcb(void *arg)
 {
     struct espconn *conn = (struct espconn *)arg;
     
-    TrivialHttpParserVars *pVars = os_malloc(sizeof(TrivialHttpParserVars));
+    TrivialHttpParserVars *pVars = malloc(sizeof(TrivialHttpParserVars));
     memset(pVars, 0, sizeof(TrivialHttpParserVars));
     conn->reverse = pVars;
 
@@ -763,7 +763,7 @@ supla_esp_cfgmode_start(void) {
 
 	supla_esp_devconn_before_cfgmode_start();
 
-	wifi_get_macaddr(SOFTAP_IF, mac);
+	wifi_get_macaddr(SOFTAP_IF, (unsigned char*)mac);
 
 	struct softap_config apconfig;
 	struct espconn *conn;
@@ -785,7 +785,7 @@ supla_esp_cfgmode_start(void) {
 
 	memcpy(apconfig.ssid, APSSID, apssid_len);
 
-	ets_snprintf(&apconfig.ssid[apssid_len],
+	ets_snprintf((char*)&apconfig.ssid[apssid_len],
 			14,
  			"-%02X%02X%02X%02X%02X%02X",
 			(unsigned char)mac[0],
@@ -806,7 +806,7 @@ supla_esp_cfgmode_start(void) {
 	wifi_set_opmode(SOFTAP_MODE);
 	wifi_softap_set_config(&apconfig);
 
-	conn = (struct espconn *)os_malloc(sizeof(struct espconn));
+	conn = (struct espconn *)malloc(sizeof(struct espconn));
 	memset( conn, 0, sizeof( struct espconn ) );
 
 	espconn_create(conn);
@@ -815,7 +815,7 @@ supla_esp_cfgmode_start(void) {
 	conn->type = ESPCONN_TCP;
 	conn->state = ESPCONN_NONE;
 
-	conn->proto.tcp = (esp_tcp *)os_zalloc(sizeof(esp_tcp));
+	conn->proto.tcp = (esp_tcp *)zalloc(sizeof(esp_tcp));
 	conn->proto.tcp->local_port = 80;
 
 	espconn_regist_connectcb(conn, supla_esp_connectcb);

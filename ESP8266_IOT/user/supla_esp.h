@@ -14,6 +14,7 @@
 
 #include "supla-dev/proto.h"
 #include "board/supla_esp_board.h"
+#include "espmissingincludes.h"
 
 #define SUPLA_ESP_SOFTVER "1.8.5"
 
@@ -39,12 +40,31 @@
 #define RELAY_MIN_DELAY 100000
 #endif
 
+#ifndef MAIN_ICACHE_FLASH
+#define MAIN_ICACHE_FLASH ICACHE_FLASH_ATTR
+#endif
+
 #ifndef GPIO_ICACHE_FLASH
 #define GPIO_ICACHE_FLASH ICACHE_FLASH_ATTR
 #endif
 
 #ifndef DEVCONN_ICACHE_FLASH
 #define DEVCONN_ICACHE_FLASH ICACHE_FLASH_ATTR
+#endif
+
+void supla_esp_board_set_device_name(char *buffer, uint8 buffer_size);
+void supla_esp_board_set_channels(TDS_SuplaRegisterDevice_B *srd);
+void supla_esp_board_relay_before_change_state(void);
+void supla_esp_board_relay_after_change_state(void);
+void supla_esp_board_gpio_init(void);
+
+
+#ifdef __FOTA
+
+#define RSA_NUM_BYTES 512
+#define RSA_PUBLIC_EXPONENT 65537
+
+extern const uint8_t rsa_public_key_bytes[RSA_NUM_BYTES];
 #endif
 
 /*

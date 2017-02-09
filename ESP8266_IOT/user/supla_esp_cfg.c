@@ -114,17 +114,17 @@ supla_esp_cfg_init(void) {
 	supla_esp_cfg.Button1Type = BTN_TYPE_BUTTON;
 	supla_esp_cfg.Button2Type = BTN_TYPE_SWITCH;
 
-	os_get_random(supla_esp_cfg.GUID, SUPLA_GUID_SIZE);
+	os_get_random((unsigned char*)supla_esp_cfg.GUID, SUPLA_GUID_SIZE);
 
 	if ( SUPLA_GUID_SIZE >= 6 ) {
-		wifi_get_macaddr(STATION_IF, mac);
+		wifi_get_macaddr(STATION_IF, (unsigned char*)mac);
 
 		for(a=0;a<6;a++)
 			supla_esp_cfg.GUID[a] = (supla_esp_cfg.GUID[a] * mac[a]) % 255;
 	}
 
 	if ( SUPLA_GUID_SIZE >=12 ) {
-		wifi_get_macaddr(SOFTAP_IF, mac);
+		wifi_get_macaddr(SOFTAP_IF, (unsigned char*)mac);
 
 		for(a=0;a<6;a++)
 			supla_esp_cfg.GUID[a+6] = ( supla_esp_cfg.GUID[a+6] * mac[a] ) % 255;

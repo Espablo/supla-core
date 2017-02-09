@@ -57,7 +57,7 @@ extern "C" {
 #define SUPLA_PROTO_VERSION                 5
 #define SUPLA_PROTO_VERSION_MIN             1
 #define SUPLA_TAG_SIZE                      5
-#ifdef __AVR__
+#if defined(__AVR__) || defined(ESP8266)
 	#define SUPLA_MAX_DATA_SIZE                 1024
 #else
 	#define SUPLA_MAX_DATA_SIZE                 10240

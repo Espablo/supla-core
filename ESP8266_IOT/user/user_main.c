@@ -24,6 +24,22 @@
 
 #include "board/supla_esp_board.c"
 
+#ifdef __FOTA
+#include "supla_update.h"
+#endif
+
+/*
+void *supla_malloc(size_t size) {
+
+	void *result = os_malloc(size);
+
+	if ( result == NULL ) {
+		supla_log(LOG_DEBUG, "Free heap size: %i/%i", system_get_free_heap_size(), size);
+	}
+
+	return result;
+}
+*/
 
 uint32 ICACHE_FLASH_ATTR
 user_rf_cal_sector_set(void)
@@ -60,10 +76,10 @@ user_rf_cal_sector_set(void)
 }
 
 
-void user_rf_pre_init() {};
+void MAIN_ICACHE_FLASH user_rf_pre_init() {};
 
 
-void user_init(void)
+void MAIN_ICACHE_FLASH user_init(void)
 {
 
 	 struct rst_info *rtc_info = system_get_rst_info();
