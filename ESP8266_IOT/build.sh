@@ -18,37 +18,16 @@
 ###
 
 DEP_LIBS="-lssl"
-SDK154=1
 NOSSL=0
 SPI_MODE="DIO"
 
 export PATH=/hdd2/Espressif/xtensa-lx106-elf/bin:$PATH
 export COMPILE=gcc
-export SDK_PATH=/hdd2/Espressif/ESP8266_IOT_SDK
-export BIN_PATH=/hdd2/Espressif/ESP8266_BIN
 
 case $1 in
-   "dht11_esp01")
-      FLASH_SIZE="512"
-   ;;
-   "dht22_esp01")
-      FLASH_SIZE="512"
-   ;;
-   "am2302_esp01")
-      FLASH_SIZE="512"
-   ;;
-   "thermometer_esp01")
-      FLASH_SIZE="512"
-   ;;
-   "thermometer_esp01_ds_gpio0")
-      FLASH_SIZE="512"
-   ;;
    "wifisocket")
    ;;
    "wifisocket_x4")
-   ;;
-   "wifisocket_esp01")
-      FLASH_SIZE="512"
    ;;
    "wifisocket_54")
    ;;
@@ -58,23 +37,14 @@ case $1 in
    ;;
    "gate_module_dht22")
    ;;
-   "gate_module_esp01")
-      FLASH_SIZE="512"
-   ;;
-   "gate_module_esp01_ds")
-      FLASH_SIZE="512"
-   ;;
    "gate_module_wroom")
    ;;
    "gate_module2_wroom")
+      FOTA=1
    ;;
    "rs_module")
    ;;
    "starter1_module_wroom")
-   ;;
-   "jangoe_wifisocket")
-   ;;
-   "jangoe_rs")
    ;;
    "lightswitch_x2")
      FLASH_SIZE="4096"
@@ -95,21 +65,25 @@ case $1 in
      FLASH_SIZE="4096"
    ;;
    "sonoff")
+      FOTA=1
    ;;
    "sonoff_socket")
+      FOTA=1
    ;;
    "sonoff_touch")
       SPI_MODE="DOUT"
    ;;
    "sonoff_dual")
+      FOTA=1
    ;;
    "sonoff_th16")
+      FOTA=1
    ;;
    "sonoff_th10")
-   ;;
-   "sonoff_dual")
+      FOTA=1
    ;;
    "sonoff_ds18b20")
+      FOTA=1
    ;;
    "EgyIOT")
      DEP_LIBS="-lpwm"
@@ -142,21 +116,12 @@ case $1 in
    echo "       build.sh BOARD_TYPE";
    echo "--------------------------";
    echo " Board types:             ";
-   echo "              dht11_esp01";
-   echo "              dht22_esp01";
-   echo "              am2302_esp01";
-   echo "              thermometer_esp01";
-   echo "              thermometer_esp01_ds_gpio0";
    echo "              wifisocket  ";
    echo "              wifisocket_x4";
-   echo "              wifisocket_esp01";
-   echo "              wifisocket_esp01_thermometer";
    echo "              wifisocket_54";
    echo "              gate_module";
    echo "              gate_module_dht11";
    echo "              gate_module_dht22";
-   echo "              gate_module_esp01";
-   echo "              gate_module_esp01_ds";
    echo "              gate_module_wroom";
    echo "              gate_module2_wroom";
    echo "              rs_module";
@@ -192,8 +157,8 @@ CFG_SECTOR=0x3C
 
 case $FLASH_SIZE in
    "512")
-     SDK154=0
-     SPI_SIZE_MAP=0
+    "512 flash size is not supported"
+    exit 0
    ;;
    "2048")
      SPI_SIZE_MAP=3
@@ -208,12 +173,10 @@ case $FLASH_SIZE in
 esac
 
 
-if [ "$SDK154" -eq 1 ]; then
-  export SDK_PATH=/hdd2/Espressif/ESP8266_NONOS_SDK154
-  export BIN_PATH=/hdd2/Espressif/ESP8266_BIN154
+export SDK_PATH=/hdd2/Espressif/ESP8266_NONOS_SDK154
+export BIN_PATH=/hdd2/Espressif/ESP8266_BIN154
 
-  cp ./ld/sdk154/"$FLASH_SIZE"_eagle.app.v6.ld $SDK_PATH/ld/eagle.app.v6.ld || exit 1
-fi
+cp ./ld/sdk154/"$FLASH_SIZE"_eagle.app.v6.ld $SDK_PATH/ld/eagle.app.v6.ld || exit 1
 
 make clean
 
@@ -235,10 +198,6 @@ if [ "$FOTA" -eq 1 ]; then
   fi
 
   case $FLASH_SIZE in
-      "512")
-       "512 flash size is not supported for FOTA"
-       exit 0
-       ;;
       "1024")
        CFG_SECTOR=0x7C
        ;;
