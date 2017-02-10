@@ -48,6 +48,7 @@
 #define VAR_BTN2         8
 #define VAR_ICF          9
 #define VAR_LED          10
+#define VAR_UPD          11
 
 typedef struct {
 	
@@ -216,6 +217,7 @@ supla_esp_parse_request(TrivialHttpParserVars *pVars, char *pdata, unsigned shor
 				char btn2[3] = { 'b', 't', '2' };
 				char icf[3] = { 'i', 'c', 'f' };
 				char led[3] = { 'l', 'e', 'd' };
+				char upd[3] = { 'u', 'p', 'd' };
 				
 				if ( len-a >= 4
 					 && pdata[a+3] == '=' ) {
@@ -280,6 +282,11 @@ supla_esp_parse_request(TrivialHttpParserVars *pVars, char *pdata, unsigned shor
 						pVars->buff_size = 12;
 						pVars->pbuff = pVars->intval;
 
+					} else if ( memcmp(upd, &pdata[a], 3) == 0 ) {
+
+						pVars->current_var = VAR_UPD;
+						pVars->buff_size = 12;
+						pVars->pbuff = pVars->intval;
 					}
 					
 					a+=4;
@@ -357,6 +364,11 @@ supla_esp_parse_request(TrivialHttpParserVars *pVars, char *pdata, unsigned shor
 					} else if ( pVars->current_var == VAR_LED ) {
 
 						cfg->StatusLedOff = (pVars->intval[0] - '0') == 1 ? 1 : 0;
+
+					} else if ( pVars->current_var == VAR_UPD ) {
+
+						cfg->FirmwareUpdate = pVars->intval[0] - '0';
+
 					}
 					
 					pVars->matched++;

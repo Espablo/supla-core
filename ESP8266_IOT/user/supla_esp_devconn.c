@@ -147,7 +147,7 @@ supla_esp_devconn_recv_cb (void *arg, char *pdata, unsigned short len) {
 	if ( len == 0 || pdata == NULL )
 		return;
 
-	supla_log(LOG_ERR, "sproto recv %i bytes", len);
+	//supla_log(LOG_ERR, "sproto recv %i bytes", len);
 
 	if ( len <= RECVBUFF_MAXSIZE-devconn->recvbuff_size ) {
 

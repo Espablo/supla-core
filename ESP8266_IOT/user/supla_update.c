@@ -30,6 +30,7 @@
 
 #include "supla_esp_devconn.h"
 #include "supla_esp_gpio.h"
+#include "supla_esp_cfg.h"
 #include "supla-dev/srpc.h"
 #include "supla-dev/log.h"
 
@@ -67,7 +68,7 @@ typedef struct {
 	char *buff;
 	int buff_pos;
 
-	short signature_size;
+	ETSTimer delay_timer;
 
 }update_params;
 
@@ -77,10 +78,13 @@ static char update_step;
 void supla_esp_update_init(void) {
 	
 	update = NULL;
-	update_step = FUPDT_STEP_CHECK;
 
-	//update_step = FUPDT_STEP_NONE;
-	//supla_log(LOG_DEBUG, "UPDATE FINISHED!");
+	if ( supla_esp_cfg.FirmwareUpdate == 1 ) {
+		update_step = FUPDT_STEP_CHECK;
+
+	} else {
+		update_step = FUPDT_STEP_NONE;
+	}
 
 }
 
@@ -118,6 +122,9 @@ supla_esp_check_updates(void *srpc) {
 	
 	if ( update_step == FUPDT_STEP_CHECK ) {
 		update_step = FUPDT_STEP_CHECKING;
+
+		supla_esp_cfg.FirmwareUpdate = 0;
+		supla_esp_cfg_save(&supla_esp_cfg);
 
 		TDS_FirmwareUpdateParams params;
 		memset(&params, 0, sizeof(TDS_FirmwareUpdateParams));
@@ -206,39 +213,38 @@ supal_esp_update_download(char *content, unsigned short content_len) {
 void ICACHE_FLASH_ATTR
 supla_esp_update_verify_and_reboot (void) {
 
+	//https://github.com/jkent/opensonoff-firmware/blob/f5d0bc5f8147e93f80b59dbe2b88617fb31de8ec/src/ota.c
+
 	char verified = 0;
 	struct sha256_ctx hash;
 	struct rsa_public_key public_key;
 	mpz_t signature;
+	uint32_t key_bytes = 0;
 
-	update->signature_size = 0;
+	uint8_t footer[16];
+	memset(footer, 0, 16);
 
-	if ( update->downloaded_data_size > 1024
-		 && SPI_FLASH_RESULT_OK == spi_flash_read(update->flash_awo-sizeof(short), (uint32*)update->buff, sizeof(short)) ) {
+	//supla_log(LOG_DEBUG, "update->downloaded_data_size=%i", update->downloaded_data_size);
 
-		 memcpy(&update->signature_size, update->buff, sizeof(short));
+	if ( update->downloaded_data_size > 16 + RSA_NUM_BYTES )
+		spi_flash_read(update->flash_awo - 16, (uint32_t *)footer, 16);
 
-		 if ( update->signature_size > 8192
-			  || update->signature_size < 0
-			  || update->signature_size > update->downloaded_data_size ) {
+	if ( footer[0] != 0xBA || footer[1] != 0xBE || footer[2] != 0x2B ||
+		 footer[3] != 0xED || footer[4] != 0 || footer[5] != 1) {
 
-			 update->signature_size = 0;
-		 };
+		key_bytes = RSA_NUM_BYTES-1;
 
+	} else {
+		key_bytes = (footer[6] << 8) - footer[7];
 	}
 
-	if ( update->signature_size > 0
-		 && SPI_FLASH_RESULT_OK != spi_flash_read(update->flash_awo-sizeof(short)-update->signature_size, (uint32*)update->buff, update->signature_size)  ) {
+	//supla_log(LOG_DEBUG, "CONTENT");
 
-		update->signature_size = 0;
-	}
-
-	if ( update->signature_size > 0 ) {
-		supla_log(LOG_DEBUG, "SIGNATURE %i", update->signature_size);
+	if ( key_bytes == RSA_NUM_BYTES ) {
 
 		sha256_init(&hash);
 
-		int bytes_left = update->flash_awo-sizeof(short)-update->signature_size;
+		int bytes_left = update->flash_awo-update->flash_addr-16-key_bytes;
 		update->flash_awo = update->flash_addr;
 
 		while(bytes_left > 0) {
@@ -248,29 +254,47 @@ supla_esp_update_verify_and_reboot (void) {
 			if ( update->buff_pos > bytes_left )
 				update->buff_pos = bytes_left;
 
-			spi_flash_read(update->flash_awo, (uint32*)update->buff, update->buff_pos);
+			if ( SPI_FLASH_RESULT_OK != spi_flash_read(update->flash_awo, (uint32*)update->buff, update->buff_pos) ) {
+
+				supla_log(LOG_DEBUG, "READ ERROR at %X", update->flash_awo);
+				break;
+			}
+
+			//supla_log(LOG_DEBUG, "%i, %i, %i", bytes_left, (int)update->buff[0], (int)update->buff[update->buff_pos-1]);
+
 			sha256_update(&hash, update->buff_pos, (unsigned char *)update->buff);
 
 			bytes_left-=update->buff_pos;
 			update->flash_awo+=update->buff_pos;
 		}
 
-		//https://github.com/jkent/opensonoff-firmware/blob/f5d0bc5f8147e93f80b59dbe2b88617fb31de8ec/src/ota.c
 		rsa_public_key_init(&public_key);
 		nettle_mpz_set_str_256_u(public_key.n, RSA_NUM_BYTES, rsa_public_key_bytes);
 		mpz_set_ui(public_key.e, RSA_PUBLIC_EXPONENT);
 		rsa_public_key_prepare(&public_key);
 
-		nettle_mpz_init_set_str_256_u(signature, update->signature_size, (uint8_t *)update->buff);
-		verified = !!rsa_sha256_verify(&public_key, &hash, signature);
+		mpz_init(signature);
+
+		if ( SPI_FLASH_RESULT_OK != spi_flash_read(update->flash_awo, (uint32_t *)update->buff, RSA_NUM_BYTES) ) {
+
+			supla_log(LOG_DEBUG, "READ ERROR at %X", update->flash_awo);
+
+		} else {
+
+			nettle_mpz_init_set_str_256_u(signature, RSA_NUM_BYTES, (uint8_t *)update->buff);
+			verified = !!rsa_sha256_verify(&public_key, &hash, signature);
+
+		}
+
 
 		mpz_clear(signature);
 		rsa_public_key_clear(&public_key);
-
 	}
 
-	supla_log(LOG_DEBUG, "FINISH... %i", verified);
-	//supla_esp_update_reboot(1);
+
+
+	//supla_log(LOG_DEBUG, "FINISH... %i", verified);
+	supla_esp_update_reboot(verified);
 
 }
 
@@ -285,10 +309,6 @@ supla_esp_update_recv_cb (void *arg, char *pdata, unsigned short len) {
 	if ( update->http_header_matched == 0 ) {
 
 		if ( update->http_header_data == NULL ) {
-
-			supla_esp_devconn_before_update_start();
-			supla_esp_devconn_stop();
-			supla_esp_gpio_state_update();
 
 			supla_log(LOG_DEBUG, "Free heap size: %i", system_get_free_heap_size());
 
@@ -398,7 +418,7 @@ supla_esp_update_recv_cb (void *arg, char *pdata, unsigned short len) {
 
 	if ( update_step == FUPDT_STEP_DOWNLOADING ) {
 
-		//supla_log(LOG_DEBUG, "FUPDT_STEP_DOWNLOADING");
+		//supla_log(LOG_DEBUG, "FUPDT_STEP_DOWNLOADING, %i, %i", update->downloaded_data_size, update->expected_file_size);
 
 		supal_esp_update_download(&pdata[update->http_header_data_len], len-update->http_header_data_len);
 		update->http_header_data_len=0;
@@ -419,6 +439,12 @@ supla_esp_update_disconnect_cb(void *arg){
 	}
 
 
+}
+
+static void ICACHE_FLASH_ATTR
+supla_esp_update_reconnect_cb(void *arg, int8_t err)
+{
+	supla_esp_update_disconnect_cb(arg);
 }
 
 void ICACHE_FLASH_ATTR
@@ -457,6 +483,7 @@ supla_esp_update_dns_found_cb(const char *name, ip_addr_t *ip, void *arg) {
 	espconn_regist_recvcb(&update->conn, supla_esp_update_recv_cb);
 	espconn_regist_connectcb(&update->conn, supla_esp_update_connect_cb);
 	espconn_regist_disconcb(&update->conn, supla_esp_update_disconnect_cb);
+	espconn_regist_reconcb(&update->conn, supla_esp_update_reconnect_cb);
 
 	espconn_connect(&update->conn);
 
@@ -476,6 +503,11 @@ supla_esp_update_resolvandconnect(void) {
 	}
 
 
+}
+
+void ICACHE_FLASH_ATTR
+supla_esp_update_delay_timer_func(void *timer_arg) {
+	supla_esp_update_resolvandconnect();
 }
 
 void ICACHE_FLASH_ATTR
@@ -522,7 +554,14 @@ supla_esp_update_url_result(TSD_FirmwareUpdate_UrlResult *url_result) {
 		update->url = (TSD_FirmwareUpdate_UrlResult*)malloc(sizeof(TSD_FirmwareUpdate_UrlResult));
 		memcpy(update->url, url_result, sizeof(TSD_FirmwareUpdate_UrlResult));
 
-		supla_esp_update_resolvandconnect();
+		supla_esp_gpio_state_update();
+		supla_esp_devconn_before_update_start();
+		supla_esp_devconn_stop();
+
+		os_timer_disarm(&update->delay_timer);
+		os_timer_setfn(&update->delay_timer, supla_esp_update_delay_timer_func, NULL);
+		os_timer_arm (&update->delay_timer, 2000, false);
+
 	}
 	
 }

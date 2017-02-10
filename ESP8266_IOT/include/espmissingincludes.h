@@ -47,6 +47,8 @@ int rand(void);
 void ets_bzero(void *s, size_t n);
 void ets_delay_us(int ms);
 
+void NmiTimSetFunc(void (*func)(void));
+
 //Hack: this is defined in SDK 1.4.0 and undefined in 1.3.0. It's only used for this, the symbol itself
 //has no meaning here.
 #ifndef RC_LIMIT_P2P_11N
