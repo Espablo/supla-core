@@ -14,14 +14,17 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
+#include "supla_esp.h"
+#include "supla_dht.h"
+#include "supla_ds18b20.h"
+
 #define B_CFG_PORT          5
 #define B_RELAY1_PORT       4
 #define B_RELAY2_PORT      13
 
 #define B_SENSOR_PORT1     12
 #define B_SENSOR_PORT2     14
-
-
 
 void ICACHE_FLASH_ATTR supla_esp_board_set_device_name(char *buffer, uint8 buffer_size) {
 	
@@ -101,7 +104,11 @@ void ICACHE_FLASH_ATTR supla_esp_board_set_channels(TDS_SuplaRegisterDevice_B *s
 	srd->channels[4].FuncList = 0;
 	srd->channels[4].Default = 0;
 
+    #if defined(__BOARD_gate_module_dht11) || defined(__BOARD_gate_module_dht22)
 	supla_get_temp_and_humidity(srd->channels[4].value);
+	#else
+	supla_get_temperature(srd->channels[4].value);
+	#endif
 
 
 }

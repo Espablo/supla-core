@@ -63,15 +63,15 @@ typedef struct {
 extern SuplaEspCfg supla_esp_cfg;
 extern SuplaEspState supla_esp_state;
 
-char ICACHE_FLASH_ATTR supla_esp_write_state(char *message);
-char ICACHE_FLASH_ATTR supla_esp_read_state(char *message);
+char CFG_ICACHE_FLASH_ATTR supla_esp_write_state(char *message);
+char CFG_ICACHE_FLASH_ATTR supla_esp_read_state(char *message);
 
-char ICACHE_FLASH_ATTR supla_esp_cfg_init(void);
-char ICACHE_FLASH_ATTR supla_esp_cfg_save(SuplaEspCfg *cfg);
-void ICACHE_FLASH_ATTR supla_esp_save_state(int delay);
+char CFG_ICACHE_FLASH_ATTR supla_esp_cfg_init(void);
+char CFG_ICACHE_FLASH_ATTR supla_esp_cfg_save(SuplaEspCfg *cfg);
+void CFG_ICACHE_FLASH_ATTR supla_esp_save_state(int delay);
 
 
-//char ICACHE_FLASH_ATTR supla_esp_write_log(char *log);
+//char CFG_ICACHE_FLASH_ATTR supla_esp_write_log(char *log);
 
 
 #endif /* SUPLA_ESP_CFG_H_ */

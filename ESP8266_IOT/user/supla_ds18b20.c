@@ -27,6 +27,8 @@
 #include "supla-dev/log.h"
 #include "supla_dht.h"
 
+#include "supla_esp_devconn.h"
+
 #ifdef DS18B20
 
 

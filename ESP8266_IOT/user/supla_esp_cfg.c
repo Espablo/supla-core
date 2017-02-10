@@ -32,7 +32,7 @@ SuplaEspCfg supla_esp_cfg;
 SuplaEspState supla_esp_state;
 static ETSTimer supla_esp_cfg_timer1;
 
-char ICACHE_FLASH_ATTR
+char CFG_ICACHE_FLASH_ATTR
 supla_esp_cfg_save(SuplaEspCfg *cfg) {
 
 	spi_flash_erase_sector(CFG_SECTOR);
@@ -46,7 +46,7 @@ supla_esp_cfg_save(SuplaEspCfg *cfg) {
 	return 0;
 }
 
-void ICACHE_FLASH_ATTR
+void CFG_ICACHE_FLASH_ATTR
 _supla_esp_save_state(void *timer_arg) {
 
 	spi_flash_erase_sector(CFG_SECTOR+1);
@@ -59,7 +59,7 @@ _supla_esp_save_state(void *timer_arg) {
 	supla_log(LOG_DEBUG, "STATE WRITE FAIL!");
 }
 
-void ICACHE_FLASH_ATTR
+void CFG_ICACHE_FLASH_ATTR
 supla_esp_save_state(int delay) {
 
 	os_timer_disarm(&supla_esp_cfg_timer1);
@@ -76,7 +76,7 @@ supla_esp_save_state(int delay) {
 
 }
 
-char ICACHE_FLASH_ATTR
+char CFG_ICACHE_FLASH_ATTR
 supla_esp_cfg_init(void) {
 
 	char TAG[6] = {'S','U','P','L','A', 4};
@@ -156,7 +156,7 @@ supla_esp_cfg_init(void) {
 	return 0;
 }
 /*
-char ICACHE_FLASH_ATTR supla_esp_write_log(char *log) {
+char CFG_ICACHE_FLASH_ATTR supla_esp_write_log(char *log) {
 
 	supla_esp_state.len++;
 

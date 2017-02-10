@@ -14,6 +14,10 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#include "supla_esp.h"
+#include "supla_dht.h"
+#include "supla_ds18b20.h"
+
 void supla_esp_board_set_device_name(char *buffer, uint8 buffer_size) {
 
  #if defined(__BOARD_lightswitch_x2) || defined(__BOARD_lightswitch_x2_54)
@@ -82,21 +86,24 @@ void supla_esp_board_set_channels(TDS_SuplaRegisterDevice_B *srd) {
 	#if defined(DS18B20)
 
 		srd->channels[2].Type = SUPLA_CHANNELTYPE_THERMOMETERDS18B20;
+		supla_get_temperature(srd->channels[2].value);
 
 	#elif defined(SENSOR_DHT11)
 
 		srd->channels[2].Type = SUPLA_CHANNELTYPE_DHT11;
+		supla_get_temp_and_humidity(srd->channels[2].value);
 
 	#elif defined(SENSOR_DHT22)
 
 		srd->channels[2].Type = SUPLA_CHANNELTYPE_DHT22;
+		supla_get_temp_and_humidity(srd->channels[2].value);
 
 	#endif
 
 	srd->channels[2].FuncList = 0;
 	srd->channels[2].Default = 0;
 
-	supla_get_temp_and_humidity(srd->channels[2].value);
+
 
 }
 

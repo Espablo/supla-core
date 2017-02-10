@@ -14,6 +14,9 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#include "supla_esp.h"
+#include "supla_ds18b20.h"
+
 #define B_CFG_PORT          0
 #define B_RELAY1_PORT       4
 #define B_RELAY2_PORT       5
@@ -79,7 +82,7 @@ void supla_esp_board_set_channels(TDS_SuplaRegisterDevice_B *srd) {
 	srd->channels[2].FuncList = 0;
 	srd->channels[2].Default = 0;
 
-	supla_get_temp_and_humidity(srd->channels[2].value);
+	supla_get_temperature(srd->channels[2].value);
 
 
 }

@@ -25,8 +25,11 @@
 
 #include "supla_esp.h"
 #include "supla_esp_cfg.h"
+#include "supla_esp_devconn.h"
 #include "supla_esp_cfgmode.h"
 #include "supla_esp_gpio.h"
+#include "supla_dht.h"
+#include "supla_ds18b20.h"
 #include "supla-dev/log.h"
 
 #include "board/supla_esp_board.c"

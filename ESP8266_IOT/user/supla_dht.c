@@ -25,6 +25,8 @@
 #include "driver/dht22.h"
 #include "supla_ds18b20.h"
 
+#include "supla_esp_devconn.h"
+
 #ifdef DHTSENSOR
 
 static double supla_dht_last_temp = -275;
@@ -32,7 +34,7 @@ static double supla_dht_last_humidity = -1;
 
 ETSTimer supla_dht_timer1;
 
-void supla_dht_init(void) {
+void DHT_ICACHE_FLASH supla_dht_init(void) {
 	supla_w1_init();
 }
 
@@ -83,7 +85,7 @@ supla_dht_read_th(void *timer_arg) {
 	}
 }
 
-void supla_get_temp_and_humidity(char value[SUPLA_CHANNELVALUE_SIZE]) {
+void DHT_ICACHE_FLASH supla_get_temp_and_humidity(char value[SUPLA_CHANNELVALUE_SIZE]) {
 
 	int t = supla_dht_last_temp*1000.00;
 	int h = supla_dht_last_humidity*1000.00;
@@ -93,7 +95,7 @@ void supla_get_temp_and_humidity(char value[SUPLA_CHANNELVALUE_SIZE]) {
 	
 }
 
-void  supla_dht_start(void) {
+void DHT_ICACHE_FLASH supla_dht_start(void) {
 	supla_dht_last_temp = -275;
 	supla_dht_last_humidity = -1;
 

@@ -117,8 +117,12 @@ char DEVCONN_ICACHE_FLASH
 supla_esp_devconn_update_started(void) {
 #ifdef __FOTA
 	return supla_esp_update_started();
+#else
+	return 0;
 #endif
 }
+
+#pragma GCC diagnostic pop
 
 int DEVCONN_ICACHE_FLASH
 supla_esp_data_read(void *buf, int count, void *dcd) {

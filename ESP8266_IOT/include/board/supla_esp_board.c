@@ -38,8 +38,6 @@
 
 #include "board/rs_module.c"
 
-#elif defined(__BOARD_starter1_module_wroom)
-
 #elif defined(__BOARD_sonoff) \
       || defined(__BOARD_sonoff_ds18b20)
 

@@ -24,10 +24,12 @@
 
 extern ETSTimer supla_dht_timer1;
 
-void supla_dht_init(void);
-void supla_get_temp_and_humidity(char value[SUPLA_CHANNELVALUE_SIZE]);
-void supla_dht_start(void);
+void DHT_ICACHE_FLASH supla_dht_init(void);
+void DHT_ICACHE_FLASH supla_get_temp_and_humidity(char value[SUPLA_CHANNELVALUE_SIZE]);
+void DHT_ICACHE_FLASH supla_dht_start(void);
 
 #endif
+
+
 
 #endif
