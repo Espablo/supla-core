@@ -93,6 +93,14 @@
 
 #include "board/lightswitch.h"
 
+#elif defined(__BOARD_inCan)
+
+#include "board/inCan.h"
+
+#elif defined(__BOARD_espablo)
+
+#include "board/espablo.h"
+
 #endif
 
 #endif
