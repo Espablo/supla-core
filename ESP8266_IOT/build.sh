@@ -21,7 +21,7 @@ DEP_LIBS="-lssl"
 NOSSL=0
 SPI_MODE="DIO"
 
-export PATH=/hdd2/Espressif/xtensa-lx106-elf/bin:$PATH
+export PATH=/home/supla/Devel/Espressif/xtensa-lx106-elf/bin:$PATH
 export COMPILE=gcc
 
 case $1 in
@@ -111,6 +111,13 @@ case $1 in
    "h801")
      DEP_LIBS="-lpwm -lssl"
    ;;
+      "inCan")
+     FLASH_SIZE="4096"
+   ;;
+      "espablo")
+     FLASH_SIZE="4096"
+   ;;
+
    *)
    echo "Usage:"
    echo "       build.sh BOARD_TYPE";
@@ -146,6 +153,8 @@ case $1 in
    echo "              lightswitch_x2_54_DHT11";
    echo "              lightswitch_x2_DHT22";
    echo "              lightswitch_x2_54_DHT22";
+   echo "		inCan";
+   echo "		espablo";
    echo 
    echo
    exit;
@@ -173,8 +182,8 @@ case $FLASH_SIZE in
 esac
 
 
-export SDK_PATH=/hdd2/Espressif/ESP8266_NONOS_SDK154
-export BIN_PATH=/hdd2/Espressif/ESP8266_BIN154
+export SDK_PATH=/home/supla/Devel/Espressif/ESP8266_NONOS_SDK154
+export BIN_PATH=/home/supla/Devel/Espressif/ESP8266_BIN154
 
 cp ./ld/sdk154/"$FLASH_SIZE"_eagle.app.v6.ld $SDK_PATH/ld/eagle.app.v6.ld || exit 1
 
@@ -213,14 +222,14 @@ if [ "$FOTA" -eq 1 ]; then
 
 
    make SUPLA_DEP_LIBS="$DEP_LIBS" FOTA="$FOTA" BOARD=$1 CFG_SECTOR="$CFG_SECTOR" BOOT=new APP="$APP" SPI_SPEED=40 SPI_MODE="$SPI_MODE" SPI_SIZE_MAP="$SPI_SIZE_MAP" $EXTRA && \
-   cp $BIN_PATH/upgrade/user"$APP"."$FLASH_SIZE".new."$SPI_SIZE_MAP".bin /media/sf_Public/"$BOARD_NAME"_user"$APP"."$FLASH_SIZE".new."$SPI_SIZE_MAP".bin && \
-   cp $SDK_PATH/bin/boot_v1.2.bin /media/sf_Public/boot_v1.2.bin
+   cp $BIN_PATH/upgrade/user"$APP"."$FLASH_SIZE".new."$SPI_SIZE_MAP".bin /home/supla/Desktop/ESP8266-Firmware/"$BOARD_NAME"_user"$APP"."$FLASH_SIZE".new."$SPI_SIZE_MAP".bin && \
+   cp $SDK_PATH/bin/boot_v1.2.bin /home/supla/Desktop/ESP8266-Firmware/boot_v1.2.bin
 
 else
 
    make SUPLA_DEP_LIBS="$DEP_LIBS" BOARD=$1 CFG_SECTOR=$CFG_SECTOR BOOT=new APP=0 SPI_SPEED=40 SPI_MODE="$SPI_MODE" SPI_SIZE_MAP="$SPI_SIZE_MAP" $EXTRA && \
-   cp $BIN_PATH/eagle.flash.bin /media/sf_Public/"$BOARD_NAME"_"$FLASH_SIZE"_eagle.flash.bin && \
-   cp $BIN_PATH/eagle.irom0text.bin /media/sf_Public/"$BOARD_NAME"_"$FLASH_SIZE"_eagle.irom0text.bin &&
+   cp $BIN_PATH/bin/eagle.flash.bin /home/supla/Desktop/ESP8266-Firmware/"$BOARD_NAME"_"$FLASH_SIZE"_eagle.flash.bin && \
+   cp $BIN_PATH/bin/eagle.irom0text.bin /home/supla/Desktop/ESP8266-Firmware/"$BOARD_NAME"_"$FLASH_SIZE"_eagle.irom0text.bin &&
    
    exit 0
 fi
